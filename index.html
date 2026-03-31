@@ -43,8 +43,8 @@ input, button, textarea { padding: 10px; font-size: 16px; margin: 5px; }
 let currentUser = null;
 let data = null;
 
-// تحميل ملف JSON
-fetch('data.json')
+// ✅ تعديل مسار JSON ليتوافق مع GitHub Pages
+fetch('./data.json')
   .then(response => response.json())
   .then(json => data = json)
   .catch(err => alert("خطأ في تحميل البيانات: " + err));
