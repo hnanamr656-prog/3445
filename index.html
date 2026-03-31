@@ -2,26 +2,26 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>برنامج إلهام وتسويق متقدم</title>
+<title>برنامج إلهام وتسويق AH STORE - 100 يوم</title>
 <style>
-    body { font-family: Arial, sans-serif; background-color: #f0f8ff; text-align: center; padding: 50px; }
-    input, button, textarea { padding: 10px; font-size: 16px; margin: 5px; }
-    #ideaBox { background-color: #ffeebb; padding: 20px; margin-top: 20px; border-radius: 10px; font-size: 18px; min-height: 80px; }
-    #comments ul { list-style: none; padding: 0; }
-    #comments li { background-color: #ffebcc; margin: 5px 0; padding: 10px; border-radius: 5px; }
+body { font-family: Arial, sans-serif; background-color: #f0f8ff; text-align: center; padding: 50px; }
+input, button, textarea { padding: 10px; font-size: 16px; margin: 5px; }
+#ideaBox { background-color: #ffeebb; padding: 20px; margin-top: 20px; border-radius: 10px; font-size: 18px; min-height: 80px; }
+#comments ul { list-style: none; padding: 0; }
+#comments li { background-color: #ffebcc; margin: 5px 0; padding: 10px; border-radius: 5px; }
 </style>
 </head>
 <body>
 
-<h1>برنامج إلهام وتسويق متقدم للمسوقين</h1>
+<h1>برنامج إلهام وتسويق AH STORE - 100 يوم</h1>
 
 <div id="loginDiv">
-    <input type="text" id="username" placeholder="اسم المسوق">
+    <input type="text" id="username" placeholder="اكتب اسمك كمـسوقة">
     <button onclick="login()">تسجيل الدخول</button>
 </div>
 
 <div id="mainDiv" style="display:none;">
-    <h2>مرحبا <span id="currentUser"></span></h2>
+    <h2>مرحبا <span id="currentUser"></span> في AH STORE</h2>
 
     <div id="ideaBox">
         <p><strong>فكرة اليوم:</strong> <span id="idea"></span></p>
@@ -40,39 +40,23 @@
 </div>
 
 <script>
-const users = ["Ali", "Sara", "Mona"];
 let currentUser = null;
+let data = null;
 
-const ideas = [
-    "استخدم فيديو قصير لعرض المنتج على وسائل التواصل",
-    "اعرض المنتج مع خلفية مختلفة لجذب الانتباه",
-    "جرّب تقديم خصم لفترة محدودة لزيادة المبيعات",
-    "اصنع قصة صغيرة حول المنتج لتوصيل قيمته",
-    "اختبر رأي العملاء في المنتج بطريقة ممتعة",
-    "صوّر المنتج أثناء الاستخدام اليومي لجذب الجمهور"
-];
+// تحميل ملف JSON
+fetch('data.json')
+  .then(response => response.json())
+  .then(json => data = json)
+  .catch(err => alert("خطأ في تحميل البيانات: " + err));
 
-const tips = [
-    "نشر المحتوى باستمرار يجذب متابعين أكثر",
-    "استخدام الهاشتاجات المناسبة يزيد الوصول",
-    "التعاون مع مسوق آخر لتوسيع الجمهور",
-    "ركز على ميزة واحدة للمنتج في كل منشور",
-    "التفاعل مع التعليقات يزيد الثقة والمبيعات",
-    "استخدم الصور الطبيعية لجذب المشاهد"
-];
+function getTodayIndex(key) {
+    const todayKey = key + "_" + currentUser;
+    let index = parseInt(localStorage.getItem(todayKey)) || 0;
+    if(index >= 100) index = 0;
+    localStorage.setItem(todayKey, index+1);
+    return index;
+}
 
-const motivations = [
-    "كل يوم فرصة جديدة للنجاح! 💪",
-    "لا تستسلم، كل جهد محسوب! ✨",
-    "ابدأ اليوم وكن الأفضل! 🚀",
-    "التحديات تصنع الأفضل دائمًا! 🌟",
-    "اعمل بذكاء، النتائج ستظهر قريبًا! 🔥",
-    "كل خطوة صغيرة تقربك من الهدف! 💖"
-];
-
-let usedIndices = {idea: [], tip: [], motivation: []};
-
-// حفظ الملاحظات في localStorage حسب المستخدم والتاريخ
 function saveComment(comment) {
     const today = new Date().toLocaleDateString();
     let allComments = JSON.parse(localStorage.getItem("comments")) || {};
@@ -95,27 +79,17 @@ function loadComments() {
     }
 }
 
-function getRandom(arr, key) {
-    if(usedIndices[key].length === arr.length) usedIndices[key] = [];
-    let available = arr.map((_, i) => i).filter(i => !usedIndices[key].includes(i));
-    let idx = available[Math.floor(Math.random() * available.length)];
-    usedIndices[key].push(idx);
-    return arr[idx];
-}
-
 function login() {
-    const username = document.getElementById("username").value;
-    if(users.includes(username)){
-        currentUser = username;
-        document.getElementById("loginDiv").style.display = "none";
-        document.getElementById("mainDiv").style.display = "block";
-        document.getElementById("currentUser").innerText = currentUser;
-        showContent();
-        loadComments();
-        checkMotivation();
-    } else {
-        alert("اسم المستخدم غير موجود!");
-    }
+    const username = document.getElementById("username").value.trim();
+    if(!username) { alert("اكتب اسمك لتسجيل الدخول"); return; }
+    if(!data){ alert("البيانات لم تُحمّل بعد، انتظر قليلًا"); return; }
+    currentUser = username;
+    document.getElementById("loginDiv").style.display = "none";
+    document.getElementById("mainDiv").style.display = "block";
+    document.getElementById("currentUser").innerText = currentUser;
+    showContent();
+    loadComments();
+    checkMotivation();
 }
 
 function logout() {
@@ -127,9 +101,10 @@ function logout() {
 }
 
 function showContent() {
-    document.getElementById("idea").innerText = getRandom(ideas, 'idea');
-    document.getElementById("tip").innerText = getRandom(tips, 'tip');
-    document.getElementById("motivation").innerText = getRandom(motivations, 'motivation');
+    const idx = getTodayIndex("idea");
+    document.getElementById("idea").innerText = data.ideas[idx];
+    document.getElementById("tip").innerText = data.tips[idx];
+    document.getElementById("motivation").innerText = data.motivations[idx];
 }
 
 function addComment() {
@@ -141,7 +116,6 @@ function addComment() {
     }
 }
 
-// تنبيه وتشجيع تلقائي إذا لم يفتح البرنامج
 function checkMotivation() {
     const lastVisit = localStorage.getItem("lastVisit_" + currentUser);
     const today = new Date().toLocaleDateString();
@@ -150,13 +124,7 @@ function checkMotivation() {
         localStorage.setItem("lastVisit_" + currentUser, today);
     }
 }
-
-// تحديث المحتوى تلقائيًا كل 24 ساعة
-setInterval(() => {
-    if(currentUser){
-        showContent();
-    }
-}, 1000*60*60*24);
 </script>
+
 </body>
 </html>
